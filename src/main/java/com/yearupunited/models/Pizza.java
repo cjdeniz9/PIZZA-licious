@@ -53,6 +53,7 @@ public abstract class Pizza implements IMenuItem {
         toppings.remove(topping);
     }
 
+    @Override
     public String getDescription() {
         String toppingList = toppings.isEmpty() ? "None" : toppings.stream().map(Topping::getName).collect(Collectors.joining(", "));
         String sauceList = sauces.isEmpty() ? "None" : sauces.stream().map(SauceType::getLabel).collect(Collectors.joining(", "));
@@ -64,6 +65,7 @@ public abstract class Pizza implements IMenuItem {
                 "\n Stuffed Crust: " + (isStuffedCrust ? "Yes" : "No");
     }
 
+    @Override
     public double calculatePrice() {
         double toppingsTotal = 0.0;
 
