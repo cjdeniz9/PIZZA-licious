@@ -13,16 +13,14 @@ public abstract class Pizza implements IMenuItem {
 
     protected PizzaSize size;
     protected CrustType crustType;
-    protected SauceType sauceType;
-    protected List<Topping> toppings;
+    protected List<SauceType> sauces = new ArrayList<>();
+    protected List<Topping> toppings = new ArrayList<>();
     protected boolean isStuffedCrust;
 
-    public Pizza(PizzaSize size, CrustType crustType, SauceType sauceType, boolean isStuffedCrust) {
+    public Pizza(PizzaSize size, CrustType crustType, boolean isStuffedCrust) {
         this.size = size;
         this.crustType = crustType;
-        this.sauceType = sauceType;
         this.isStuffedCrust = isStuffedCrust;
-        this.toppings = new ArrayList<>();
     }
 
     public PizzaSize getSize() {
@@ -33,8 +31,8 @@ public abstract class Pizza implements IMenuItem {
         return crustType;
     }
 
-    public SauceType getSauceType() {
-        return sauceType;
+    public List<SauceType> getSauces() {
+        return sauces;
     }
 
     public List<Topping> getToppings() {
@@ -44,6 +42,8 @@ public abstract class Pizza implements IMenuItem {
     public boolean isStuffedCrust() {
         return isStuffedCrust;
     }
+
+    public void addSauce(SauceType sauce) { sauces.add(sauce); }
 
     public void addTopping(Topping topping) {
         toppings.add(topping);
@@ -55,10 +55,11 @@ public abstract class Pizza implements IMenuItem {
 
     public String getDescription() {
         String toppingList = toppings.isEmpty() ? "None" : toppings.stream().map(Topping::getName).collect(Collectors.joining(", "));
+        String sauceList = sauces.isEmpty() ? "None" : sauces.stream().map(SauceType::getLabel).collect(Collectors.joining(", "));
 
         return size.getLabel() + " Pizza" +
                 "\n Crust: " + crustType.getLabel() +
-                "\n Sauce: " + sauceType.getLabel() +
+                "\n Sauce: " + sauceList +
                 "\n Toppings: " + toppingList +
                 "\n Stuffed Crust: " + (isStuffedCrust ? "Yes" : "No");
     }
