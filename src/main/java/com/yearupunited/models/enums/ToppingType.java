@@ -22,15 +22,11 @@ public enum ToppingType {
         return label;
     }
 
-    public double getPersonalSizePricing() {
-        return personalSizePricing;
-    }
-
-    public double getMediumSizePricing() {
-        return mediumSizePricing;
-    }
-
-    public double getLargeSizePricing() {
-        return largeSizePricing;
+    public double getToppingPrice(PizzaSize size) {
+        return switch (size) {
+            case PERSONAL -> personalSizePricing;
+            case MEDIUM -> mediumSizePricing;
+            case LARGE -> largeSizePricing;
+        };
     }
 }
