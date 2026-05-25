@@ -63,6 +63,15 @@ public abstract class Pizza implements IMenuItem {
                 "\n Stuffed Crust: " + (isStuffedCrust ? "Yes" : "No");
     }
 
-    public abstract double calculatePrice();
+    public double calculatePrice() {
+        double toppingsTotal = 0.0;
+
+        for (Topping topping : toppings) {
+            toppingsTotal += topping.getPrice(size);
+
+        }
+
+        return size.getBasePrice() + toppingsTotal;
+    }
 
 }

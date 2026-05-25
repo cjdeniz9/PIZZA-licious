@@ -10,16 +10,4 @@ public class CustomPizza extends Pizza {
         super(size, crustType, sauceType, isStuffedCrust);
     }
 
-    @Override
-    public double calculatePrice() {
-        double toppingsTotal = 0.0;
-        
-        for (Topping topping : toppings) {
-            toppingsTotal += topping.getPrice(size);
-            
-        }
-
-        return size.getBasePrice() + toppingsTotal;
-    }
-    
 }
