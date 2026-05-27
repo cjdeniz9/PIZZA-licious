@@ -24,4 +24,10 @@ public class Topping {
     public double getPrice(PizzaSize size) {
         return toppingType.getToppingPrice(size);
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s : %s", name, toppingType);
+    }
+
 }

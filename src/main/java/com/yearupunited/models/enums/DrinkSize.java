@@ -1,6 +1,8 @@
 package com.yearupunited.models.enums;
 
-public enum DrinkSize {
+import com.yearupunited.models.interfaces.Labelled;
+
+public enum DrinkSize implements Labelled {
 
     SMALL("Small", 2.00),
     MEDIUM("Medium", 2.50),

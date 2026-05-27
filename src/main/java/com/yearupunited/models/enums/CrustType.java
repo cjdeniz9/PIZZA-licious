@@ -1,6 +1,8 @@
 package com.yearupunited.models.enums;
 
-public enum CrustType {
+import com.yearupunited.models.interfaces.Labelled;
+
+public enum CrustType implements Labelled {
 
     THIN("Thin"),
     REGULAR("Regular"),
