@@ -28,17 +28,18 @@ public class Order {
         items.remove(item);
     }
 
-    public void placeOrder() {
+    public boolean placeOrder() {
         // check if any pizzas in order
         boolean hasPizza = items.stream().anyMatch(item -> item instanceof Pizza);
         boolean hasDrinkOrKnots = items.stream().anyMatch(item -> item instanceof Drink || item instanceof GarlicKnots);
 
         if (!hasPizza && !hasDrinkOrKnots) {
             System.out.println("Order must contain at least a drink or garlic knots!");
-            return;
+            return false;
         }
 
         saveReceipt();
+        return true;
     }
 
     public void cancelOrder() {
