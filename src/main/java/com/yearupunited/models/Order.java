@@ -24,17 +24,13 @@ public class Order {
         items.add(item);
     }
 
-    public void removeItem(IMenuItem item) {
-        items.remove(item);
-    }
-
     public boolean placeOrder() {
         // check if any pizzas in order
         boolean hasPizza = items.stream().anyMatch(item -> item instanceof Pizza);
         boolean hasDrinkOrKnots = items.stream().anyMatch(item -> item instanceof Drink || item instanceof GarlicKnots);
 
         if (!hasPizza && !hasDrinkOrKnots) {
-            System.out.println("Order must contain at least a drink or garlic knots!");
+            System.out.println("  Order must contain at least a drink or garlic knots!");
             return false;
         }
 
@@ -74,7 +70,7 @@ public class Order {
             writer.printf("Total: $%.2f%n", getTotal());
             writer.close();
 
-            System.out.println("Receipt saved to " + filePath);
+            System.out.println("  Receipt saved to " + filePath);
 
         } catch (IOException e) {
             System.out.println("Error saving receipt: " + e.getMessage());
@@ -94,13 +90,13 @@ public class Order {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("===== Current Order =====\n");
+        sb.append("================== Current Order ========================\n");
 
         // display newest first
         for (int i = items.size() - 1; i >= 0; i--) {
             sb.append(items.get(i).getDescription()).append("\n");
             sb.append(String.format("Price: $%.2f%n", items.get(i).calculatePrice()));
-            sb.append("---------------------------------\n");
+            sb.append("---------------------------------------------------------\n");
         }
 
         sb.append(String.format("Total: $%.2f%n", getTotal()));

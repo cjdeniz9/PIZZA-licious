@@ -1,5 +1,5 @@
 package com.yearupunited.models.interfaces;
 
-public interface Labelled {
+public interface ILabelled {
     String getLabel();
 }

@@ -3,6 +3,7 @@ package com.yearupunited.models;
 import com.yearupunited.models.enums.CrustType;
 import com.yearupunited.models.enums.PizzaSize;
 import com.yearupunited.models.enums.SauceType;
+import com.yearupunited.models.enums.ToppingType;
 import com.yearupunited.models.interfaces.IMenuItem;
 
 import java.util.ArrayList;
@@ -50,8 +51,10 @@ public abstract class Pizza implements IMenuItem {
     }
 
     public void removeTopping(Topping topping) {
-        toppings.remove(topping);
-    }
+        toppings.removeIf(t ->
+                t.getType() == topping.getType()
+                        && t.getName().equalsIgnoreCase(topping.getName())
+        );    }
 
     @Override
     public String getDescription() {
@@ -59,19 +62,49 @@ public abstract class Pizza implements IMenuItem {
         String sauceList = sauces.isEmpty() ? "None" : sauces.stream().map(SauceType::getLabel).collect(Collectors.joining(", "));
 
         return size.getLabel() + " Pizza" +
-                "\n Crust: " + crustType.getLabel() +
-                "\n Sauce: " + sauceList +
-                "\n Toppings: " + toppingList +
-                "\n Stuffed Crust: " + (isStuffedCrust ? "Yes" : "No");
+                "\nCrust: " + crustType.getLabel() +
+                "\nSauce: " + sauceList +
+                "\nToppings: " + toppingList + "\nStuffed Crust: " + (isStuffedCrust ? "Yes" : "No");
     }
 
     @Override
     public double calculatePrice() {
         double toppingsTotal = 0.0;
 
-        for (Topping topping : toppings) {
-            toppingsTotal += topping.getPrice(size);
+        long meatCount = toppings.stream()
+                .filter(t -> t.getType() == ToppingType.MEAT)
+                .count();
 
+        long cheeseCount = toppings.stream()
+                .filter(t -> t.getType() == ToppingType.CHEESE)
+                .count();
+
+        if (meatCount >= 1) {
+            toppingsTotal += ToppingType.MEAT.getToppingPrice(size);
+
+            if (meatCount > 1) {
+                double extraMeat =
+                        switch (size) {
+                            case PERSONAL -> 0.50;
+                            case MEDIUM -> 1.00;
+                            case LARGE -> 1.50;
+                        };
+                toppingsTotal += (meatCount - 1) * extraMeat;
+            }
+        }
+
+        if (cheeseCount >= 1) {
+            toppingsTotal += ToppingType.CHEESE.getToppingPrice(size);
+
+            if (cheeseCount > 1) {
+                double extraCheese =
+                        switch (size) {
+                            case PERSONAL -> 0.30;
+                            case MEDIUM -> 0.60;
+                            case LARGE -> 0.80;
+                        };
+                toppingsTotal += (cheeseCount - 1) * extraCheese;
+            }
         }
 
         return size.getBasePrice() + toppingsTotal;

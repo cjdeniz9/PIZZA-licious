@@ -1,0 +1,20 @@
+Pepperoni,MEAT
+Sausage,MEAT
+Ham,MEAT
+Bacon,MEAT
+Chicken,MEAT
+Meatball,MEAT
+Mozzarella,CHEESE
+Parmesan,CHEESE
+Ricotta,CHEESE
+Goat Cheese,CHEESE
+Buffalo,CHEESE
+Onions,REGULAR
+Mushrooms,REGULAR
+Bell Peppers,REGULAR
+Olives,REGULAR
+Tomatoes,REGULAR
+Spinach,REGULAR
+Basil,REGULAR
+Pineapple,REGULAR
+Anchovies,REGULAR
