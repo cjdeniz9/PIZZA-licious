@@ -2,6 +2,8 @@ package com.yearupunited.ui;
 
 import java.util.Scanner;
 
+import static com.yearupunited.ui.ConsoleStyle.*;
+
 public class Helper {
 
     private static final Scanner scanner = new Scanner(System.in);
@@ -90,9 +92,11 @@ public class Helper {
                 if (value >= min && value <= max) {
                     return value;
                 }
-                System.out.println("Please enter a number between " + min + " and " + max + ".");
+                System.out.println("  " + "Please enter a number between " + min + " and " + max + "." + RESET);
+                System.out.println();
             } catch (NumberFormatException e) {
-                System.out.println("Please enter a whole number.");
+                System.out.println("  " + "Please enter a whole number." + RESET);
+                System.out.println();
             }
         }
     }

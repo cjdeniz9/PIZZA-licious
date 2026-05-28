@@ -1,8 +1,8 @@
 package com.yearupunited.models.enums;
 
-import com.yearupunited.models.interfaces.Labelled;
+import com.yearupunited.models.interfaces.ILabelled;
 
-public enum PizzaSize implements Labelled {
+public enum PizzaSize implements ILabelled {
 
     PERSONAL("Personal 8\"", 8.50),
     MEDIUM("Medium 12\"", 12.00),

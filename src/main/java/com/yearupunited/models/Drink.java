@@ -14,18 +14,9 @@ public class Drink implements IMenuItem {
         this.drinkSize = drinkSize;
     }
 
-    public String getFlavor() {
-        return flavor;
-    }
-
-    public DrinkSize getDrinkSize() {
-        return drinkSize;
-    }
-
-
     @Override
     public String getDescription() {
-        return drinkSize.getLabel() + " " + flavor + " drink";
+        return drinkSize.getLabel() + " " + flavor;
     }
 
     @Override

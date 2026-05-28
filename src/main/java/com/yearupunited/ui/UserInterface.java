@@ -2,10 +2,11 @@ package com.yearupunited.ui;
 
 import com.yearupunited.models.*;
 import com.yearupunited.models.enums.*;
-import com.yearupunited.models.interfaces.Labelled;
+import com.yearupunited.models.interfaces.ILabelled;
 import com.yearupunited.models.services.ToppingManager;
 import com.yearupunited.ui.enums.HomeMenuOption;
 import com.yearupunited.ui.enums.OrderMenuOption;
+import com.yearupunited.ui.enums.PizzaMenuOption;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,64 +16,70 @@ import static com.yearupunited.ui.ConsoleStyle.*;
 
 public class UserInterface {
 
-    public void displayHome() throws InterruptedException{
-        ToppingManager.loadToppings("src/main/resources/toppings.txt");
+    private boolean firstHomeVisit = true;
 
-        displayHeader();
+    public void displayHome() throws InterruptedException {
+        // Loads available toppings from resources/toppings.txt
+        init();
+
+//        displayHeader();
 
         HomeMenuOption selectedOption;
         do {
             displayHomeMenu();
-            int choice = readInt(GOLD + "  >> " + WHITE);
+
+            int choice = readRangeInt(GOLD + "  >> " + WHITE, 0, 1);
             selectedOption = HomeMenuOption.fromCode(choice).orElse(null);
             handleHomeMenu(selectedOption);
+
+            firstHomeVisit = false;
         } while (selectedOption != HomeMenuOption.EXIT);
 
         System.out.println();
-        System.out.println("Thank you for visiting PIZZA-licious. Goodbye!");
-        System.out.println();
+        System.out.println(AMBER + "  Thank you for visiting PIZZA-licious. Goodbye!" + RESET);
+    }
+
+    private void init() {
+        ToppingManager.loadToppings("src/main/resources/toppings.txt");
     }
 
     public void displayOrder() {
         Order order = new Order();
 
         OrderMenuOption selectedOption;
+
+        boolean exit;
         do {
             displayOrderMenu();
-            int choice = readInt("➤ Choose an option: ");
-            selectedOption = OrderMenuOption.fromCode(choice).orElse(null);
-            handleOrderMenu(selectedOption, order);
-        } while (selectedOption != OrderMenuOption.CANCEL_ORDER);
 
-        System.out.println();
-        System.out.println("  Cancelling order...");
+            int choice = readRangeInt(GOLD + "  >> " + WHITE, 0, 4);
+            selectedOption = OrderMenuOption.fromCode(choice).orElse(null);
+            exit = handleOrderMenu(selectedOption, order);
+        } while (!exit);
+
+        System.out.println(WHITE + "  Returning to home screen..." + RESET);
         System.out.println();
     }
 
     private void displayHeader() throws InterruptedException {
         String G2 = "\u001B[38;5;220m";
-        String G3 = "\u001B[38;5;214m";
         String G4 = "\u001B[38;5;208m";
-        String WH = "\u001B[38;5;255m";
         String DM = "\u001B[38;5;136m";
-        String R  = "\u001B[0m";
+        String R = "\u001B[0m";
         String BOLD = "\u001B[1m";
 
         String TOP = G2 + "  ╔═════════════════════════════════════════════════════════════╗" + R;
-
         String P = "     ";
 
         System.out.println();
         System.out.println(TOP);
         System.out.println();
 
-        // LOGO rows 1-4 print instantly
-        System.out.println(P + G2 + BOLD + "██████╗ ██╗███████╗███████╗ █████╗ " + G3 + "      PIZZA-LICIOUS");
-        System.out.println(P + G2 + BOLD + "██╔══██╗██║╚══███╔╝╚══███╔╝██╔══██╗" + G3 + "      ────────────────");
-        System.out.println(P + G3 + BOLD + "██████╔╝██║  ███╔╝   ███╔╝ ███████║" + DM + "      ✦ Fresh & Hot");
-        System.out.println(P + G3 + BOLD + "██╔═══╝ ██║ ███╔╝   ███╔╝  ██╔══██║" + DM + "      ✦ Made Your Way");
+        System.out.println(P + G2 + BOLD + "██████╗ ██╗███████╗███████╗ █████╗ " + AMBER + "      PIZZA-LICIOUS");
+        System.out.println(P + G2 + BOLD + "██╔══██╗██║╚══███╔╝╚══███╔╝██╔══██╗" + AMBER + "      ────────────────");
+        System.out.println(P + AMBER + BOLD + "██████╔╝██║  ███╔╝   ███╔╝ ███████║" + DM + "      ✦ Fresh & Hot");
+        System.out.println(P + AMBER + BOLD + "██╔═══╝ ██║ ███╔╝   ███╔╝  ██╔══██║" + DM + "      ✦ Made Your Way");
 
-        // row 5 — sizzle animates on right side inline with banner row
         String[] sizzleFrames = {
                 "     🍕· · · · · · · ·     ",
                 "     · 🍕· · · · · · ·     ",
@@ -103,17 +110,12 @@ public class UserInterface {
         };
 
         for (String frame : sizzleFrames) {
-            System.out.print("\r" + P + G4 + BOLD + "██║     ██║███████╗███████╗██║  ██║ " + G3 + frame + R);
+            System.out.print("\r" + P + G4 + BOLD + "██║     ██║███████╗███████╗██║  ██║ " + AMBER + frame + R);
             System.out.flush();
             Thread.sleep(80);
         }
         System.out.println();
 
-//        // row 6
-//        System.out.println(P + G4 + BOLD + "╚═╝     ╚═╝╚══════╝╚══════╝╚═╝  ╚═╝" + R);
-//        System.out.println();
-
-        // LICIOUS animates
         String licious = P + "  ✦  L · I · C · I · O · U · S  ✦";
         System.out.print(BOLD + G2);
         for (char c : licious.toCharArray()) {
@@ -125,62 +127,75 @@ public class UserInterface {
         System.out.println();
     }
 
+    // ── SHARED LAYOUT OUTLINES ──────────────────────────────────────
+
+    private void printScreenHeader(String title) {
+        String TOP = GOLD + "  ╔═════════════════════════════════════════════════════════════╗" + RESET;
+        int width = 61;
+        int leftPadding = (width - title.length()) / 2;
+        String centeredTitle = WHITE + BOLD + " ".repeat(Math.max(0, leftPadding)) + title;
+        System.out.println(centeredTitle);
+        System.out.println(TOP);
+        System.out.println();
+    }
+
+    private void printScreenFooter() {
+        System.out.println();
+        System.out.println(GOLD + "  ╚═════════════════════════════════════════════════════════════╝" + RESET);
+    }
+
+    private void printMid() {
+        System.out.println(GOLD + "  ╠═════════════════════════════════════════════════════════════╣" + RESET);
+    }
+
+    // ── MENUS ──────────────────────────────────────────────────────
+
     private void displayHomeMenu() {
-        String MID = GOLD + "  ╠═════════════════════════════════════════════════════════════╣" + RESET;
-        String BOT = GOLD + "  ╚═════════════════════════════════════════════════════════════╝" + RESET;
-
-        System.out.println(MID);
-        System.out.println();
-
-        System.out.println(PADDING + WHITE + "[1]" + GOLD + " " + HomeMenuOption.NEW_ORDER.getLabel() + "          " + WHITE + "[0]" + GOLD + " " + HomeMenuOption.EXIT.getLabel());
+        if (firstHomeVisit) {
+            printMid();
+        } else {
+            System.out.println(GOLD + "  ╔═════════════════════════════════════════════════════════════╗" + RESET);
+        }
 
         System.out.println();
-        System.out.println(BOT);
+        System.out.println(PADDING + WHITE + "[1]" + GOLD + " " + HomeMenuOption.NEW_ORDER.getLabel() +
+                "          " + WHITE + "[0]" + GOLD + " " + HomeMenuOption.EXIT.getLabel());
+        System.out.println();
+        System.out.println(GOLD + "  ╚═════════════════════════════════════════════════════════════╝" + RESET);
     }
 
     private void displayOrderMenu() {
         System.out.println();
 
-        System.out.println("--- ORDER ---");
+        printScreenHeader("ORDER");
 
-        System.out.println(OrderMenuOption.ADD_PIZZA.getCode() + ") " + OrderMenuOption.ADD_PIZZA.getLabel());
-        System.out.println(OrderMenuOption.ADD_DRINK.getCode() + ") " + OrderMenuOption.ADD_DRINK.getLabel());
-        System.out.println(OrderMenuOption.ADD_GARLIC_KNOTS.getCode() + ") " + OrderMenuOption.ADD_GARLIC_KNOTS.getLabel());
-        System.out.println(OrderMenuOption.CHECKOUT.getCode() + ") " + OrderMenuOption.CHECKOUT.getLabel());
-        System.out.println(OrderMenuOption.CANCEL_ORDER.getCode() + ") " + OrderMenuOption.CANCEL_ORDER.getLabel());
+        System.out.printf(PADDING + WHITE + "[1]" + GOLD + " %-25s " + WHITE + "[2]" + GOLD + " %s%n",
+                OrderMenuOption.ADD_PIZZA.getLabel(), OrderMenuOption.ADD_DRINK.getLabel());
+        System.out.println();
+        System.out.printf(PADDING + WHITE + "[3]" + GOLD + " %-25s " + WHITE + "[4]" + GOLD + " %s%n",
+                OrderMenuOption.ADD_GARLIC_KNOTS.getLabel(), OrderMenuOption.CHECKOUT.getLabel());
+        System.out.println();
+        System.out.printf(PADDING + WHITE + "[0]" + GOLD + " %s%n", OrderMenuOption.CANCEL_ORDER.getLabel());
+
+        printScreenFooter();
     }
 
-    private void handleOrderMenu(OrderMenuOption option, Order order) {
-        if (option == null) {
-            System.out.println("  ✗ Invalid option. Please try again.");
-            return;
-        }
+    private void displayPizzaMenu() {
+        System.out.println();
 
-        switch (option) {
-            case ADD_PIZZA -> {
-                Pizza pizza = processAddPizzaRequest();
-                order.addItem(pizza);
-            }
-            case ADD_DRINK -> {
-                Drink drink = processAddDrinkRequest();
-                order.addItem(drink);
-            }
-            case ADD_GARLIC_KNOTS -> {
-                GarlicKnots garlicKnots = processAddGarlicKnotsRequest();
-                order.addItem(garlicKnots);
-            }
-            case CHECKOUT -> {
-                processCheckoutRequest(order);
-            }
-            case CANCEL_ORDER -> {
-                return;
-            }
-        }
+        printScreenHeader("ADD PIZZA");
+
+        System.out.printf(PADDING + WHITE + "[1]" + GOLD + " %-25s " + WHITE + "[2]" + GOLD + " %s%n",
+                PizzaMenuOption.SIGNATURE.getLabel(), PizzaMenuOption.CUSTOM.getLabel());
+
+        printScreenFooter();
     }
+
+    // ── HANDLERS ───────────────────────────────────────────────────
 
     private void handleHomeMenu(HomeMenuOption option) {
         if (option == null) {
-            System.out.println("  ✗ Invalid option. Please try again.");
+            System.out.println(WHITE + "  ✗ Invalid option. Please try again." + RESET);
             return;
         }
 
@@ -190,120 +205,295 @@ public class UserInterface {
         }
     }
 
-    private <T extends Enum<T> & Labelled> T selectFromEnumList(String prompt, T[] options) {
-        for (int i = 0; i < options.length; i++) {
-            System.out.println((i + 1) + ") " + options[i].getLabel());
+    private boolean handleOrderMenu(OrderMenuOption option, Order order) {
+        if (option == null) {
+            System.out.println(WHITE + "  ✗ Invalid option. Please try again." + RESET);
+            return false;
         }
 
-        int choice = readRangeInt(prompt, 1, options.length);
+        switch (option) {
+            case ADD_PIZZA -> {
+                Pizza pizza = handlePizzaMenu();
+                if (pizza != null) order.addItem(pizza);
+            }
+            case ADD_DRINK -> {
+                Drink drink = processAddDrinkRequest();
+                order.addItem(drink);
+            }
+            case ADD_GARLIC_KNOTS -> {
+                    order.addItem(new GarlicKnots());
+                    System.out.println(WHITE + "  ✓ Garlic knots added to order!" + RESET);
+            }
+            case CHECKOUT -> {
+                processCheckoutRequest(order);
+                return true;
+            }
+            case CANCEL_ORDER -> {
+                order.cancelOrder();
+                return true;
+            }
+        }
+        return false;
+    }
 
+    private Pizza handlePizzaMenu() {
+        displayPizzaMenu();
+
+        int choice = readInt(GOLD + "  >> " + WHITE);
+        PizzaMenuOption selectedOption = PizzaMenuOption.fromCode(choice).orElse(null);
+
+        if (selectedOption == null) {
+            System.out.println(WHITE + "  ✗ Invalid option." + RESET);
+            return null;
+        }
+
+        switch (selectedOption) {
+            case SIGNATURE -> { return processAddSignaturePizzaRequest(); }
+            case CUSTOM -> { return processAddPizzaRequest(); }
+            default -> { return null; }
+        }
+    }
+
+    private void handleAddToppings(Pizza pizza) {
+        List<Topping> meatToppings = ToppingManager.getToppingsByType(ToppingType.MEAT);
+        List<Topping> cheeseToppings = ToppingManager.getToppingsByType(ToppingType.CHEESE);
+        List<Topping> regularToppings = ToppingManager.getToppingsByType(ToppingType.REGULAR);
+
+        List<Topping> meat = selectMultipleFromToppingsList("Select meats:", meatToppings, pizza);
+        List<Topping> cheese = selectMultipleFromToppingsList("Select cheeses:", cheeseToppings, pizza);
+        List<Topping> regular = selectMultipleFromToppingsList("Select other toppings:", regularToppings, pizza);
+
+        meat.forEach(pizza::addTopping);
+        cheese.forEach(pizza::addTopping);
+        regular.forEach(pizza::addTopping);
+    }
+
+    private void handleRemoveToppings(Pizza pizza) {
+        List<Topping> meatToppings = ToppingManager.getToppingsByType(ToppingType.MEAT);
+        List<Topping> cheeseToppings = ToppingManager.getToppingsByType(ToppingType.CHEESE);
+        List<Topping> regularToppings = ToppingManager.getToppingsByType(ToppingType.REGULAR);
+
+        List<Topping> meat = selectMultipleExistingToppings("Select meats:", meatToppings, pizza);
+        List<Topping> cheese = selectMultipleExistingToppings("Select cheeses:", cheeseToppings, pizza);
+        List<Topping> regular = selectMultipleExistingToppings("Select other toppings:", regularToppings, pizza);
+
+        meat.forEach(pizza::removeTopping);
+        cheese.forEach(pizza::removeTopping);
+        regular.forEach(pizza::removeTopping);
+    }
+
+    // ── SELECTION HELPERS ──────────────────────────────────────────
+
+    private <T extends Enum<T> & ILabelled> T selectFromEnumList(String prompt, T[] options) {
+        System.out.println();
+        printScreenHeader(prompt.toUpperCase().replace(":", "").trim());
+
+        for (int i = 0; i < options.length; i++) {
+            System.out.println(PADDING + WHITE + "[" + (i + 1) + "]" + GOLD + " " + options[i].getLabel());
+        }
+
+        printScreenFooter();
+
+        int choice = readRangeInt(GOLD + "  >> " + WHITE, 1, options.length);
         return options[choice - 1];
     }
 
-    private <T extends Enum<T> & Labelled> List<T> selectMultipleFromEnumList(String prompt, T[] options) {
+    private <T extends Enum<T> & ILabelled> List<T> selectMultipleFromEnumList(String prompt, T[] options) {
         List<T> selected = new ArrayList<>();
 
         while (true) {
+            System.out.println();
+            printScreenHeader(prompt.toUpperCase().replace(":", "").trim());
+
             for (int i = 0; i < options.length; i++) {
-                System.out.println((i + 1) + ") " + options[i].getLabel());
+                System.out.println(PADDING + WHITE + "[" + (i + 1) + "]" + GOLD + " " + options[i].getLabel());
             }
+            System.out.println(PADDING + WHITE + "[0]" + GOLD + " Done");
 
-            System.out.println("0) Done");
+            printScreenFooter();
 
-            int choice = readRangeInt(prompt, 0, options.length);
-
-            if (choice == 0) {
-                break;
-            }
+            int choice = readRangeInt(GOLD + "  >> " + WHITE, 0, options.length);
+            if (choice == 0) break;
 
             T selectedOption = options[choice - 1];
 
             if (!selected.contains(selectedOption)) {
                 selected.add(selectedOption);
+                System.out.println(WHITE + "  ✓ " + selectedOption.getLabel() + " added." + RESET);
             } else {
-                System.out.println("Already selected.");
+                System.out.println(WHITE + "  ✗ Already selected." + RESET);
             }
         }
 
         return selected;
     }
 
-    private List<Topping> selectMultipleFromToppingsList(String prompt, List<Topping> items) {
+    private List<Topping> selectMultipleFromToppingsList(String prompt, List<Topping> items, Pizza pizza) {
         List<Topping> selected = new ArrayList<>();
 
         while (true) {
+            System.out.println();
+            printScreenHeader(prompt.toUpperCase().replace(":", "").trim());
 
             for (int i = 0; i < items.size(); i++) {
-                System.out.println((i + 1) + ") " + items.get(i).getName());
+                System.out.println(PADDING + WHITE + "[" + (i + 1) + "]" + GOLD + " " + items.get(i).getName());
             }
+            System.out.println(PADDING + WHITE + "[0]" + GOLD + " Done");
 
-            System.out.println("0) Done");
+            printScreenFooter();
 
-            int choice = readRangeInt(prompt, 0, items.size());
-
+            int choice = readRangeInt(GOLD + "  >> " + WHITE, 0, items.size());
             if (choice == 0) break;
 
             Topping chosen = items.get(choice - 1);
 
-            if (!selected.contains(chosen)) {
-                selected.add(chosen);
+            if (pizza.getToppings().contains(chosen)) {
+                System.out.println(WHITE + "  ✗ Pizza already contains this topping." + RESET);
+            } else if (selected.contains(chosen)) {
+                System.out.println(WHITE + "  ✗ Already selected." + RESET);
             } else {
-                System.out.println("Already selected.");
+                selected.add(chosen);
+                System.out.println(WHITE + "  ✓ " + chosen.getName() + " added." + RESET);
             }
         }
 
         return selected;
     }
 
+    private List<Topping> selectMultipleExistingToppings(String prompt, List<Topping> items, Pizza pizza) {
+        List<Topping> selected = new ArrayList<>();
+
+        while (true) {
+            System.out.println();
+            printScreenHeader(prompt.toUpperCase().replace(":", "").trim());
+
+            for (int i = 0; i < items.size(); i++) {
+                System.out.println(PADDING + WHITE + "[" + (i + 1) + "]" + GOLD + " " + items.get(i).getName());
+            }
+            System.out.println(PADDING + WHITE + "[0]" + GOLD + " Done");
+
+            printScreenFooter();
+
+            int choice = readRangeInt(GOLD + "  >> " + WHITE, 0, items.size());
+            if (choice == 0) break;
+
+            Topping chosen = items.get(choice - 1);
+
+            if (!pizza.getToppings().contains(chosen)) {
+                System.out.println(GOLD + "  ✗ Pizza does not contain this topping." + RESET);
+            } else if (selected.contains(chosen)) {
+                System.out.println(GOLD + "  ✗ Already selected." + RESET);
+            } else {
+                selected.add(chosen);
+                System.out.println(GOLD + "  ✓ " + chosen.getName() + " removed." + RESET);
+            }
+        }
+
+        return selected;
+    }
+
+    // ── PROCESSES ──────────────────────────────────────────────────
+
     private Pizza processAddPizzaRequest() {
-        List<Topping> meatToppings = ToppingManager.getToppingsByType(ToppingType.MEAT);
-        List<Topping> cheeseToppings = ToppingManager.getToppingsByType(ToppingType.CHEESE);
-        List<Topping> regularToppings = ToppingManager.getToppingsByType(ToppingType.REGULAR);
+        PizzaSize size = selectFromEnumList("PIZZA SIZE", PizzaSize.values());
+        CrustType crust = selectFromEnumList("CRUST TYPE", CrustType.values());
 
         System.out.println();
 
-        CrustType crust = selectFromEnumList("Select your type: ", CrustType.values());
-        PizzaSize size = selectFromEnumList("Pizza size: ", PizzaSize.values());
-
-        System.out.println("Toppings");
-        List<Topping> meat = selectMultipleFromToppingsList("Select meats:", meatToppings);
-        List<Topping> cheese = selectMultipleFromToppingsList("Select cheeses:", cheeseToppings);
-        List<Topping> regular = selectMultipleFromToppingsList("Select other toppings:", regularToppings);
-        List<SauceType> sauces = selectMultipleFromEnumList("Select sauces: ", SauceType.values());
-
-        boolean isStuffedCrust = readBoolean("Would you like the pizza with stuffed crust?");
+        boolean isStuffedCrust = readBoolean("  Would you like stuffed crust?");
+        List<SauceType> sauces = selectMultipleFromEnumList("SELECT SAUCES", SauceType.values());
 
         CustomPizza customPizza = new CustomPizza(size, crust, isStuffedCrust);
-        meat.forEach(customPizza::addTopping);
-        cheese.forEach(customPizza::addTopping);
-        regular.forEach(customPizza::addTopping);
         sauces.forEach(customPizza::addSauce);
 
+        System.out.println();
+        System.out.println(GOLD + "  ── TOPPINGS ──────────────────────────────────────────────────" + RESET);
+        handleAddToppings(customPizza);
+
+        System.out.println(WHITE + "  ✓ Pizza added to order!" + RESET);
         return customPizza;
     }
 
-    private Drink processAddDrinkRequest() {
-        DrinkSize size = selectFromEnumList("Drink size: ", DrinkSize.values());
-        String flavor = readRequiredString("Enter your flavor drink: ");
+    private Pizza processAddSignaturePizzaRequest() {
+        MargheritaPizza margheritaPizza = new MargheritaPizza();
+        VeggiePizza veggiePizza = new VeggiePizza();
 
-        return new Drink(flavor, size);
+        System.out.println();
+        printScreenHeader("SIGNATURE PIZZAS");
+
+        System.out.printf(PADDING + WHITE + "[1]" + GOLD + " %-25s " + WHITE + "[2]" + GOLD + " %s%n",
+                margheritaPizza.getName(), veggiePizza.getName());
+
+        printScreenFooter();
+
+        int choice = readRangeInt(GOLD + "  >> " + WHITE, 1, 2);
+
+        SignaturePizza pizza;
+        switch (choice) {
+            case 1 -> pizza = new MargheritaPizza();
+            case 2 -> pizza = new VeggiePizza();
+            default -> { return null; }
+        }
+
+        processCustomizeSignaturePizzaRequest(pizza);
+        System.out.println(WHITE + "  ✓ Pizza added to order!" + RESET);
+        return pizza;
     }
 
-    private GarlicKnots processAddGarlicKnotsRequest() {
-        return new GarlicKnots();
-    }
+    private void processCustomizeSignaturePizzaRequest(SignaturePizza signaturePizza) {
+        System.out.println();
+        printScreenHeader("CUSTOMIZE " + signaturePizza.getName().toUpperCase());
 
-    private void processCheckoutRequest(Order order) {
-        System.out.println(order);
+        String[] lines = signaturePizza.toString().split("\n");
+        for (String line : lines) {
+            System.out.println(PADDING + WHITE + line);
+        }
 
-        System.out.println("1) Confirm");
-        System.out.println("2) Cancel");
+        System.out.println();
+        System.out.printf(PADDING + WHITE + "[1]" + GOLD + " %-25s " + WHITE + "[2]" + GOLD + " %s%n",
+                "Add toppings", "Remove toppings");
+        System.out.println();
+        System.out.printf(PADDING + WHITE + "[3]" + GOLD + " %s%n", "Leave as is");
 
-        int option = readRangeInt("Select an option: ", 1, 2);
+        printScreenFooter();
+
+        int option = readRangeInt(GOLD + "  >> " + WHITE, 1, 3);
 
         if (option == 1) {
-            order.saveReceipt();
+            handleAddToppings(signaturePizza);
+        } else if (option == 2) {
+            handleRemoveToppings(signaturePizza);
         }
     }
 
+    private Drink processAddDrinkRequest() {
+        DrinkSize size = selectFromEnumList("DRINK SIZE", DrinkSize.values());
+        String flavor = readRequiredString(GOLD + "  Enter flavor: " + WHITE);
+        System.out.println(WHITE + "  ✓ Drink added to order!" + RESET);
+        return new Drink(flavor, size);
+    }
+
+    private void processCheckoutRequest(Order order) {
+        System.out.println();
+        printScreenHeader("CHECKOUT");
+
+        String[] lines = order.toString().split("\n");
+        for (String line : lines) {
+            System.out.println(PADDING + WHITE + line);
+        }
+
+        System.out.println();
+        System.out.printf(PADDING + WHITE + "[1]" + GOLD + " %-25s " + WHITE + "[0]" + GOLD + " %s%n",
+                "Confirm", "Cancel");
+
+        printScreenFooter();
+
+        int option = readRangeInt(GOLD + "  >> " + WHITE, 0, 1);
+
+        if (option == 1) {
+            order.placeOrder();
+        } else if (option == 0) {
+            order.cancelOrder();
+        }
+    }
 }

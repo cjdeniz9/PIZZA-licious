@@ -1,8 +1,8 @@
 package com.yearupunited.models.enums;
 
-import com.yearupunited.models.interfaces.Labelled;
+import com.yearupunited.models.interfaces.ILabelled;
 
-public enum SauceType implements Labelled {
+public enum SauceType implements ILabelled {
 
     MARINARA("Marinara"),
     ALFREDO("Alfredo"),
