@@ -3,6 +3,7 @@ package com.yearupunited.ui;
 import com.yearupunited.models.*;
 import com.yearupunited.models.enums.*;
 import com.yearupunited.models.interfaces.ILabelled;
+import com.yearupunited.models.services.SoundPlayer;
 import com.yearupunited.models.services.ToppingManager;
 import com.yearupunited.ui.enums.HomeMenuOption;
 import com.yearupunited.ui.enums.OrderMenuOption;
@@ -29,6 +30,7 @@ public class UserInterface {
             displayHomeMenu();
 
             int choice = readRangeInt(GOLD + "  >> " + WHITE, 0, 1);
+
             selectedOption = HomeMenuOption.fromCode(choice).orElse(null);
             handleHomeMenu(selectedOption);
 
@@ -118,6 +120,8 @@ public class UserInterface {
         }
         System.out.println(RESET);
         System.out.println();
+
+        SoundPlayer.play("/Users/cjdeniz/projects/PIZZA-licious/sounds/pizza-pizza.wav");
     }
 
     // ── SHARED LAYOUT OUTLINES ──────────────────────────────────────

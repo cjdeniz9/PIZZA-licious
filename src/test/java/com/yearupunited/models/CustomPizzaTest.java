@@ -38,7 +38,6 @@ class CustomPizzaTest {
         Topping c2 = new Topping("Goat Cheese", ToppingType.CHEESE);
         Topping c3 = new Topping("Buffalo", ToppingType.CHEESE);
 
-
         p1.addTopping(m1);
         p1.addTopping(m2);
         p1.addTopping(m3);

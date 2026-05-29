@@ -1,6 +1,7 @@
 package com.yearupunited.models;
 
 import com.yearupunited.models.interfaces.IMenuItem;
+import com.yearupunited.models.services.SoundPlayer;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -73,6 +74,7 @@ public class Order {
 
             System.out.println("  Receipt saved to " + filePath);
 
+            SoundPlayer.play("/Users/cjdeniz/projects/PIZZA-licious/sounds/taco-bell-bong.wav");
         } catch (IOException e) {
             System.out.println("Error saving receipt: " + e.getMessage());
         }
