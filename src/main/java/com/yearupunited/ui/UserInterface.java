@@ -22,7 +22,7 @@ public class UserInterface {
         // Loads available toppings from resources/toppings.txt
         init();
 
-//        displayHeader();
+        displayHeader();
 
         HomeMenuOption selectedOption;
         do {
@@ -62,23 +62,16 @@ public class UserInterface {
     }
 
     private void displayHeader() throws InterruptedException {
-        String G2 = "\u001B[38;5;220m";
-        String G4 = "\u001B[38;5;208m";
-        String DM = "\u001B[38;5;136m";
-        String R = "\u001B[0m";
-        String BOLD = "\u001B[1m";
-
-        String TOP = G2 + "  ╔═════════════════════════════════════════════════════════════╗" + R;
-        String P = "     ";
+        String TOP = BRIGHT_GOLD + "  ╔═════════════════════════════════════════════════════════════╗" + RESET;
 
         System.out.println();
         System.out.println(TOP);
         System.out.println();
 
-        System.out.println(P + G2 + BOLD + "██████╗ ██╗███████╗███████╗ █████╗ " + AMBER + "      PIZZA-LICIOUS");
-        System.out.println(P + G2 + BOLD + "██╔══██╗██║╚══███╔╝╚══███╔╝██╔══██╗" + AMBER + "      ────────────────");
-        System.out.println(P + AMBER + BOLD + "██████╔╝██║  ███╔╝   ███╔╝ ███████║" + DM + "      ✦ Fresh & Hot");
-        System.out.println(P + AMBER + BOLD + "██╔═══╝ ██║ ███╔╝   ███╔╝  ██╔══██║" + DM + "      ✦ Made Your Way");
+        System.out.println(PADDING + BRIGHT_GOLD + BOLD + "██████╗ ██╗███████╗███████╗ █████╗ " + AMBER + "      PIZZA-LICIOUS");
+        System.out.println(PADDING + BRIGHT_GOLD + BOLD + "██╔══██╗██║╚══███╔╝╚══███╔╝██╔══██╗" + AMBER + "      ────────────────");
+        System.out.println(PADDING + AMBER + BOLD + "██████╔╝██║  ███╔╝   ███╔╝ ███████║" + BURNT_AMBER + "      ✦ Fresh & Hot");
+        System.out.println(PADDING + AMBER + BOLD + "██╔═══╝ ██║ ███╔╝   ███╔╝  ██╔══██║" + BURNT_AMBER + "      ✦ Made Your Way");
 
         String[] sizzleFrames = {
                 "     🍕· · · · · · · ·     ",
@@ -110,20 +103,20 @@ public class UserInterface {
         };
 
         for (String frame : sizzleFrames) {
-            System.out.print("\r" + P + G4 + BOLD + "██║     ██║███████╗███████╗██║  ██║ " + AMBER + frame + R);
+            System.out.print("\r" + PADDING + DEEP_ORANGE + BOLD + "██║     ██║███████╗███████╗██║  ██║ " + AMBER + frame + RESET);
             System.out.flush();
             Thread.sleep(80);
         }
         System.out.println();
 
-        String licious = P + "  ✦  L · I · C · I · O · U · S  ✦";
-        System.out.print(BOLD + G2);
+        String licious = PADDING + "  ✦  L · I · C · I · O · U · S  ✦";
+        System.out.print(BOLD + BRIGHT_GOLD);
         for (char c : licious.toCharArray()) {
             System.out.print(c);
             System.out.flush();
             Thread.sleep(55);
         }
-        System.out.println(R);
+        System.out.println(RESET);
         System.out.println();
     }
 

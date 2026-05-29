@@ -335,16 +335,7 @@ Benefits:
 
 ## 🎥 Application Demo
 
-> Placeholder for application demo video / screenshots.
-
-Example content to add later:
-
-* Home screen
-* Order screen
-* Pizza customization
-* Signature pizza customization
-* Checkout screen
-* Receipt generation
+![App Demo](diagrams/app-demo.gif)
 
 ---
 
