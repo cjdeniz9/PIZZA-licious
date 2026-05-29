@@ -51,10 +51,12 @@ public abstract class Pizza implements IMenuItem {
     }
 
     public void removeTopping(Topping topping) {
+        // removeIf loops through the toppings list and removes any item where the condition is true
         toppings.removeIf(t ->
                 t.getType() == topping.getType()
                         && t.getName().equalsIgnoreCase(topping.getName())
-        );    }
+        );
+    }
 
     @Override
     public String getDescription() {

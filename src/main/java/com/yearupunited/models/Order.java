@@ -25,10 +25,11 @@ public class Order {
     }
 
     public boolean placeOrder() {
-        // check if any pizzas in order
+        // check if there's any pizzas in order
         boolean hasPizza = items.stream().anyMatch(item -> item instanceof Pizza);
         boolean hasDrinkOrKnots = items.stream().anyMatch(item -> item instanceof Drink || item instanceof GarlicKnots);
 
+        // cancel order/return home if cart is empty
         if (!hasPizza && !hasDrinkOrKnots) {
             System.out.println("  Order must contain at least a drink or garlic knots!");
             return false;
@@ -90,9 +91,11 @@ public class Order {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
+        
         sb.append("================== Current Order ========================\n");
 
         // display newest first
+        // loop backwards through items list so newest additions appear first
         for (int i = items.size() - 1; i >= 0; i--) {
             sb.append(items.get(i).getDescription()).append("\n");
             sb.append(String.format("Price: $%.2f%n", items.get(i).calculatePrice()));

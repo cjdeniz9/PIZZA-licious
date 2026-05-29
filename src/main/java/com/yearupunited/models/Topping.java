@@ -1,6 +1,5 @@
 package com.yearupunited.models;
 
-import com.yearupunited.models.enums.PizzaSize;
 import com.yearupunited.models.enums.ToppingType;
 
 public class Topping {

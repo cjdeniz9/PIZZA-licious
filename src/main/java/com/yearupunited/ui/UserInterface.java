@@ -292,24 +292,34 @@ public class UserInterface {
     }
 
     private <T extends Enum<T> & ILabelled> List<T> selectMultipleFromEnumList(String prompt, T[] options) {
+
         List<T> selected = new ArrayList<>();
 
         while (true) {
+
             System.out.println();
             printScreenHeader(prompt.toUpperCase().replace(":", "").trim());
 
+            // display each option with a number starting at 1
             for (int i = 0; i < options.length; i++) {
                 System.out.println(PADDING + WHITE + "[" + (i + 1) + "]" + GOLD + " " + options[i].getLabel());
             }
+
+            // always show 0 as the exit option
             System.out.println(PADDING + WHITE + "[0]" + GOLD + " Done");
 
             printScreenFooter();
 
+            // read a valid number between 0 and the number of options
             int choice = readRangeInt(GOLD + "  >> " + WHITE, 0, options.length);
+
+            // 0 means the user is done selecting
             if (choice == 0) break;
 
+            // convert to 0-based array index
             T selectedOption = options[choice - 1];
 
+            // only add if not already selected to avoid duplicates
             if (!selected.contains(selectedOption)) {
                 selected.add(selectedOption);
                 System.out.println(WHITE + "  ✓ " + selectedOption.getLabel() + " added." + RESET);
@@ -318,6 +328,7 @@ public class UserInterface {
             }
         }
 
+        // return the final list of selected options
         return selected;
     }
 
